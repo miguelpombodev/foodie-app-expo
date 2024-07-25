@@ -12,7 +12,7 @@ export default function Input({...rest}: IInputProps) {
       placeholderTextColor="gray.300"
       _focus={{
         bg: "gray.200",
-        cursorColor: "black"
+        selectionColor: "red.300"
       }}
       {...rest}
     />
