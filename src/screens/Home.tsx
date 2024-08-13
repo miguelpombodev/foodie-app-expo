@@ -1,21 +1,21 @@
 import { Header } from "@components/Header";
 import Input from "@components/Input";
 import { VStack, Text, View, HStack, ScrollView, Icon, Heading, Image } from "native-base";
-import { Ionicons } from "@expo/vector-icons"
+import { Ionicons, AntDesign } from "@expo/vector-icons"
 import { api } from "@services/api";
 import axios from "axios";
 import { useEffect, useState } from "react";
-
-interface StoreTypesDataAPI {
-  id: number;
-  name: string;
-  avatar: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { SquaredStoreTypes } from "@components/SquaredStoreType";
+import { formatCurrencyToRelatedCountry } from "@utils/Currency.utils";
+import { IStoresDataAPI, IUserCustomProducts, StoreTypesDataAPI } from "src/interfaces/Home.interface";
+import { handleGetResumedStoresData, handleGetSectionedProductsData, handleGetStoresData, handleGetStoreTypesData, handleUserCustomProductsData } from "@services/requests/home.requests";
 
 export function Home() {
   const [storeTypes, setStoreTypes] = useState<StoreTypesDataAPI[] | undefined>([])
+  const [resumedStores, setResumedStores] = useState<IStoresDataAPI[] | undefined>([])
+  const [stores, setStores] = useState<IStoresDataAPI[] | undefined>([])
+  const [sectionedProducts, setSectionedProducts] = useState<IUserCustomProducts[] | undefined>([])
+  const [userCustomProduct, setUserCustomProduct] = useState<IUserCustomProducts[] | undefined>([])
 
   useEffect(() => {
     async function fetchStoreTypesData() {
@@ -27,16 +27,118 @@ export function Home() {
     fetchStoreTypesData()
   }, []);
 
-  async function handleGetStoreTypesData() {
-    try {
-      const { data } = await api.get<StoreTypesDataAPI[]>('/store/v1/types')
-      console.log(data)
-      return data
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(`STATUS CODE: ${error.status} - DETAILS: ${error}`)
-      }
+  useEffect(() => {
+    async function fetchResumedStoresData() {
+      const response = await handleGetResumedStoresData()
+
+      setResumedStores(response)
     }
+
+    fetchResumedStoresData()
+  }, [])
+
+  useEffect(() => {
+    async function fetchStoresData() {
+      const response = await handleGetStoresData()
+
+      setStores(response)
+    }
+
+    fetchStoresData()
+  }, [])  
+
+  useEffect(() => {
+    async function fetchUserCustomProducstData() {
+      const response = await handleUserCustomProductsData()
+
+      setUserCustomProduct(response)
+    }
+
+    fetchUserCustomProducstData()
+  }, [])
+
+  useEffect(() => {
+    async function fetchGetSectionedProducstData() {
+      const response = await handleGetSectionedProductsData()
+
+      setSectionedProducts(response)
+    }
+
+    fetchGetSectionedProducstData()
+  }, [])  
+
+
+  function renderProductsBySection() {
+    return sectionedProducts.map(sectionedProduct => (
+      <View rounded="xl" mr={5} w={120} alignItems="baseline" justifyContent="flex-end" key={sectionedProduct.productName}>
+                  <Image src={sectionedProduct.productAvatar} rounded="full" h={85} w={85} resizeMode="center" alt={sectionedProduct.productName} flex={2}/>
+                  <View>
+                    <Text color="green.500" fontWeight="bold">{formatCurrencyToRelatedCountry(sectionedProduct.productPrice)}</Text>
+                    <Text color="black" fontWeight={700}>{sectionedProduct.productName}</Text>
+                  </View>
+                  <View mt={2} flex={1}>
+                    <Text color="black" fontSize={12}>{sectionedProduct.productStoreName}</Text>
+                    <Text color="black" fontSize={12} mt={1}>
+                        <Icon as={AntDesign} name="star" color="yellow.500" ml={10}/> 
+                        {Math.abs(5).toFixed(1)}
+                        <Text color="gray.400" ml={5}>(99999)</Text>
+                    </Text>
+                    <Text color="gray.400" fontSize={11}> 50 min | <Text color="green.500">Grátis</Text></Text>
+                  </View>
+                </View>
+    ))
+  }
+
+  function renderStoreList () {
+    return stores.map(store => (
+      <View my={3} key={store.storeName}>
+        <HStack alignItems="center">
+          <View mr={5}>
+            <Image src={store.storeAvatar} rounded="full" h={65} w={65} resizeMode="center" alt={store.storeName} flex={1}/>
+          </View>
+          <View>
+            <Heading fontSize="md">{store.storeName}</Heading>
+            <Text my={1}>
+              <Icon as={AntDesign} name="star" color="yellow.500" ml={10}/> 
+              {Math.abs(store.storeRate).toFixed(1)} | 
+              {store.storeTypeName} | 
+              2km
+            </Text>
+            <Text>25-35 min | <Text color="green.500">Grátis</Text></Text>
+          </View>
+        </HStack>
+      </View>
+    ))
+  }
+
+  function renderUserCustomizedProducts() {
+    return userCustomProduct.map(customProduct => (
+      <View rounded="xl" mr={5} w={120} alignItems="baseline" justifyContent="flex-end" key={customProduct.productName}>
+                  <Image src={customProduct.productAvatar} rounded="full" h={85} w={85} resizeMode="center" alt={customProduct.productName} flex={2}/>
+                  <View>
+                    <Text color="green.500" fontWeight="bold">{formatCurrencyToRelatedCountry(customProduct.productPrice)}</Text>
+                    <Text color="black" fontWeight={700}>{customProduct.productName}</Text>
+                  </View>
+                  <View mt={2} flex={1}>
+                    <Text color="black" fontSize={12}>{customProduct.productStoreName}</Text>
+                    <Text color="black" fontSize={12} mt={1}>
+                        <Icon as={AntDesign} name="star" color="yellow.500" ml={10}/> 
+                        {Math.abs(5).toFixed(1)}
+                        <Text color="gray.400" ml={5}>(99999)</Text>
+                    </Text>
+                    <Text color="gray.400" fontSize={11}> 50 min | <Text color="green.500">Grátis</Text></Text>
+                  </View>
+                </View>
+    ))
+  }
+
+  function renderResumedStores() {
+    return resumedStores.map(store => (
+      <View alignItems="center" mr={5}>
+        <Image src={store.storeAvatar} rounded="full" h={85} w={85} resizeMode="center" alt={store.storeName} flex={1}/>
+        <Text>{store.storeName}</Text>
+      </View>
+    ))
   }
 
   return (
@@ -53,10 +155,7 @@ export function Home() {
           <ScrollView contentContainerStyle={{flexGrow: 1}} showsHorizontalScrollIndicator={false} overScrollMode='never' horizontal>
             <HStack ml={5}>
               {storeTypes && storeTypes.map(st => (
-                <View key={st.id} rounded="xl" h={105} w={105} mr={5} alignItems="center">
-                  <Image src={st.avatar} alt={st.name} w="full" h="2/3"/>
-                  <Text position="absolute" bottom={0} letterSpacing={0.5} fontWeight="semibold">{st.name}</Text>
-                </View>
+                <SquaredStoreTypes key={st.id} avatar={st.avatar} name={st.name}/>
               ))}
             </HStack>
           </ScrollView>
@@ -69,26 +168,21 @@ export function Home() {
           </HStack>
           <ScrollView contentContainerStyle={{flexGrow: 1}} showsHorizontalScrollIndicator={false} overScrollMode='never' horizontal>
             <HStack ml={3}>
-              <View bgColor="red.500" rounded="full" h={85} w={85} mr={5}/>
-              <View bgColor="red.500" rounded="full" h={85} w={85} mr={5}/>
-              <View bgColor="red.500" rounded="full" h={85} w={85} mr={5}/>
-              <View bgColor="red.500" rounded="full" h={85} w={85} mr={5}/>
-              <View bgColor="red.500" rounded="full" h={85} w={85} mr={5}/>
+              {resumedStores && renderResumedStores()}
             </HStack>
           </ScrollView>
         </View>
 
         <View my={10}>
           <HStack mb={5} justifyContent="space-between" alignItems="center" px={3}>
-              <Heading fontSize="md">Vai de Churrasquinho?</Heading>
-              <Text color="red.500" fontSize="sm">Ver mais</Text>
+              <Heading fontSize="md">Vai um pra viagem? 🚙</Heading>
+              <Text color="red.500" fontSize="sm" fontWeight="bold">Ver mais</Text>
           </HStack>
           <ScrollView contentContainerStyle={{flexGrow: 1}} showsHorizontalScrollIndicator={false} overScrollMode='never' horizontal>
             <HStack ml={5}>
-              <View bgColor="red.500" rounded="xl" h={85} w={85} mr={5}/>
-              <View bgColor="red.500" rounded="xl" h={85} w={85} mr={5}/>
-              <View bgColor="red.500" rounded="xl" h={85} w={85} mr={5}/>
-              <View bgColor="red.500" rounded="xl" h={85} w={85} mr={5}/>
+            {
+              sectionedProducts && renderProductsBySection()
+            }
             </HStack>
           </ScrollView>
         </View>
@@ -96,14 +190,13 @@ export function Home() {
         <View my={10}>
           <HStack mb={5} justifyContent="space-between" alignItems="center" px={3}>
               <Heading fontSize="md">Ofertas Exclusivas</Heading>
-              <Text color="red.500" fontSize="sm">Ver mais</Text>
+              <Text color="red.500" fontSize="sm" fontWeight="bold">Ver mais</Text>
           </HStack>
           <ScrollView contentContainerStyle={{flexGrow: 1}} showsHorizontalScrollIndicator={false} overScrollMode='never' horizontal>
             <HStack ml={5}>
-              <View bgColor="red.500" rounded="xl" h={85} w={85} mr={5}/>
-              <View bgColor="red.500" rounded="xl" h={85} w={85} mr={5}/>
-              <View bgColor="red.500" rounded="xl" h={85} w={85} mr={5}/>
-              <View bgColor="red.500" rounded="xl" h={85} w={85} mr={5}/>
+            {
+              userCustomProduct && renderUserCustomizedProducts()
+            }
             </HStack>
           </ScrollView>
         </View>
@@ -112,71 +205,7 @@ export function Home() {
           <Heading fontSize="md" mb={5} px={3}>Lojas</Heading>
 
           <View px={5}>
-            <View my={3}>
-              <HStack alignItems="center">
-                <View bgColor="red.500" rounded="full" h={85} w={85} mr={5} />
-                <View>
-                  <Heading fontSize="md">Nome Loja</Heading>
-                  <Text>Rate Loja | Categoria Loja | Distancia Loja</Text>
-                  <Text>Tempo Médio | Frete Loja</Text>
-                </View>
-              </HStack>
-            </View>
-
-            <View my={3}>
-              <HStack alignItems="center">
-                <View bgColor="red.500" rounded="full" h={85} w={85} mr={5} />
-                <View>
-                  <Heading fontSize="md">Nome Loja</Heading>
-                  <Text>Rate Loja | Categoria Loja | Distancia Loja</Text>
-                  <Text>Tempo Médio | Frete Loja</Text>
-                </View>
-              </HStack>
-            </View>
-
-            <View my={3}>
-              <HStack alignItems="center">
-                <View bgColor="red.500" rounded="full" h={85} w={85} mr={5} />
-                <View>
-                  <Heading fontSize="md">Nome Loja</Heading>
-                  <Text>Rate Loja | Categoria Loja | Distancia Loja</Text>
-                  <Text>Tempo Médio | Frete Loja</Text>
-                </View>
-              </HStack>
-            </View>
-
-            <View my={3}>
-              <HStack alignItems="center">
-                <View bgColor="red.500" rounded="full" h={85} w={85} mr={5} />
-                <View>
-                  <Heading fontSize="md">Nome Loja</Heading>
-                  <Text>Rate Loja | Categoria Loja | Distancia Loja</Text>
-                  <Text>Tempo Médio | Frete Loja</Text>
-                </View>
-              </HStack>
-            </View>
-
-            <View my={3}>
-              <HStack alignItems="center">
-                <View bgColor="red.500" rounded="full" h={85} w={85} mr={5} />
-                <View>
-                  <Heading fontSize="md">Nome Loja</Heading>
-                  <Text>Rate Loja | Categoria Loja | Distancia Loja</Text>
-                  <Text>Tempo Médio | Frete Loja</Text>
-                </View>
-              </HStack>
-            </View>
-
-            <View my={3}>
-              <HStack alignItems="center">
-                <View bgColor="red.500" rounded="full" h={85} w={85} mr={5} />
-                <View>
-                  <Heading fontSize="md">Nome Loja</Heading>
-                  <Text>Rate Loja | Categoria Loja | Distancia Loja</Text>
-                  <Text>Tempo Médio | Frete Loja</Text>
-                </View>
-              </HStack>
-            </View>
+            {stores && renderStoreList()}
           </View>
         </View>
       </VStack>
