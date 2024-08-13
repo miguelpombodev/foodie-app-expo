@@ -2,13 +2,11 @@ import { Header } from "@components/Header";
 import Input from "@components/Input";
 import { VStack, Text, View, HStack, ScrollView, Icon, Heading, Image } from "native-base";
 import { Ionicons, AntDesign } from "@expo/vector-icons"
-import { api } from "@services/api";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { SquaredStoreTypes } from "@components/SquaredStoreType";
-import { formatCurrencyToRelatedCountry } from "@utils/Currency.utils";
 import { IStoresDataAPI, IUserCustomProducts, StoreTypesDataAPI } from "src/interfaces/Home.interface";
 import { handleGetResumedStoresData, handleGetSectionedProductsData, handleGetStoresData, handleGetStoreTypesData, handleUserCustomProductsData } from "@services/requests/home.requests";
+import { NumberUtils } from "@utils/Number.utils";
 
 export function Home() {
   const [storeTypes, setStoreTypes] = useState<StoreTypesDataAPI[] | undefined>([])
@@ -73,16 +71,16 @@ export function Home() {
       <View rounded="xl" mr={5} w={120} alignItems="baseline" justifyContent="flex-end" key={sectionedProduct.productName}>
                   <Image src={sectionedProduct.productAvatar} rounded="full" h={85} w={85} resizeMode="center" alt={sectionedProduct.productName} flex={2}/>
                   <View>
-                    <Text color="green.500" fontWeight="bold">{formatCurrencyToRelatedCountry(sectionedProduct.productPrice)}</Text>
+                    <Text color="green.500" fontWeight="bold">{NumberUtils.formatCurrencyToRelatedCountry(sectionedProduct.productPrice)}</Text>
                     <Text color="black" fontWeight={700}>{sectionedProduct.productName}</Text>
                   </View>
                   <View mt={2} flex={1}>
                     <Text color="black" fontSize={12}>{sectionedProduct.productStoreName}</Text>
-                    <Text color="black" fontSize={12} mt={1}>
-                        <Icon as={AntDesign} name="star" color="yellow.500" ml={10}/> 
-                        {Math.abs(5).toFixed(1)}
-                        <Text color="gray.400" ml={5}>(99999)</Text>
-                    </Text>
+                    <HStack color="black" fontSize={12} mt={1} alignItems="center">
+                        <Icon as={AntDesign} name="star" color="yellow.500" mr={1}/> 
+                        <Text color="yellow.500" fontWeight="bold">{Math.abs(5).toFixed(1)}</Text>
+                        <Text color="gray.400" ml={1}>(99999)</Text>
+                    </HStack>
                     <Text color="gray.400" fontSize={11}> 50 min | <Text color="green.500">Grátis</Text></Text>
                   </View>
                 </View>
@@ -98,13 +96,15 @@ export function Home() {
           </View>
           <View>
             <Heading fontSize="md">{store.storeName}</Heading>
-            <Text my={1}>
-              <Icon as={AntDesign} name="star" color="yellow.500" ml={10}/> 
-              {Math.abs(store.storeRate).toFixed(1)} | 
-              {store.storeTypeName} | 
-              2km
-            </Text>
-            <Text>25-35 min | <Text color="green.500">Grátis</Text></Text>
+            <HStack alignItems="center">
+                <Icon as={AntDesign} name="star" color="yellow.500" mr={1}/> 
+                <Text color="yellow.500" fontWeight="bold">{Math.abs(store.storeRate).toFixed(1)} </Text> 
+                <Text color="gray.500"> • </Text>
+                <Text color="gray.500">{store.storeTypeName}</Text>  
+                <Text color="gray.500"> • </Text>
+                <Text color="gray.500">2 km</Text>
+            </HStack>
+            <Text color="gray.500">25-35 min • <Text color="green.500">Grátis</Text></Text>
           </View>
         </HStack>
       </View>
@@ -116,7 +116,7 @@ export function Home() {
       <View rounded="xl" mr={5} w={120} alignItems="baseline" justifyContent="flex-end" key={customProduct.productName}>
                   <Image src={customProduct.productAvatar} rounded="full" h={85} w={85} resizeMode="center" alt={customProduct.productName} flex={2}/>
                   <View>
-                    <Text color="green.500" fontWeight="bold">{formatCurrencyToRelatedCountry(customProduct.productPrice)}</Text>
+                    <Text color="green.500" fontWeight="bold">{NumberUtils.formatCurrencyToRelatedCountry(customProduct.productPrice)}</Text>
                     <Text color="black" fontWeight={700}>{customProduct.productName}</Text>
                   </View>
                   <View mt={2} flex={1}>
@@ -126,7 +126,7 @@ export function Home() {
                         {Math.abs(5).toFixed(1)}
                         <Text color="gray.400" ml={5}>(99999)</Text>
                     </Text>
-                    <Text color="gray.400" fontSize={11}> 50 min | <Text color="green.500">Grátis</Text></Text>
+                    <Text color="gray.400" fontSize={11}> 50 min • <Text color="green.500">Grátis</Text></Text>
                   </View>
                 </View>
     ))

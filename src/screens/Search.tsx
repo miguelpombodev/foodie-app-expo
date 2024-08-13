@@ -1,9 +1,9 @@
 import { Center, Text } from "native-base";
 
-export function Exercise() {
+export function Search() {
   return (
     <Center flex={1}>
-      <Text>Exercise</Text>
+      <Text>Search</Text>
     </Center>
   )
 }
