@@ -1,6 +1,5 @@
 
 import { Icon, useTheme } from "native-base"
-import { Platform } from "react-native"
 import { FontAwesome, MaterialIcons, Ionicons } from "@expo/vector-icons"
 import { BottomTabNavigationProp, createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { Home } from "@screens/Home"
@@ -19,7 +18,7 @@ export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>;
 
 export function AppRoutes () {
   const { Navigator, Screen } = createBottomTabNavigator<AppRoutes>()
-  const { sizes, colors } = useTheme()
+  const { colors } = useTheme()
   const iconSize = 6
   
   return (

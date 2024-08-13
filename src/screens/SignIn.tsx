@@ -1,9 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
-import { VStack, Image, Text, Center, Heading, ScrollView, View } from 'native-base';
+import { Platform } from 'react-native'
+import { VStack, Text, Center, ScrollView, View, HStack } from 'native-base';
 
 import LogoSvg from '@assets/logo.svg'
-import BackgroundImg from '@assets/background.png'
-import Input from '@components/Input';
 import Button from '@components/Button';
 import { AuthNavigatorRoutesProps } from '@routes/auth.routes';
 
@@ -11,37 +10,52 @@ export default function SignIn () {
   const navigation = useNavigation<AuthNavigatorRoutesProps>()
 
 
-  function handleNewAccount() {
-    navigation.navigate('signUp')
+  function handleLoginScreen() {
+    navigation.navigate('login')
   }
 
   return (
     <ScrollView contentContainerStyle={{flexGrow: 1}} showsVerticalScrollIndicator={false} overScrollMode='never'>
-    <VStack flex={1} bg="gray.800" pb={16}>
-      <Image source={BackgroundImg} alt='Pessoas treinando' resizeMode='stretch' position='absolute' flex={1} defaultSource={BackgroundImg}/>
+    <VStack flex={1} bg="white" pb={16} justifyContent="flex-end">
       <View px={10}>
-        <Center my={24}>
-          <LogoSvg />
-
-          <Text color="gray.100" fontSize="sm">
-            Treine sua mente e o seu corpo
-          </Text>
+        <Center mb={20}>
+          <LogoSvg width={200} height={200}/>
         </Center>
-
         <Center>
-          <Heading color="gray.100" fontSize="xl" mb={6} fontFamily="heading">
-            Acesse sua conta
-          </Heading>
-          <Input placeholder='E-mail' keyboardType='email-address' autoCapitalize='none'/>
-          <Input placeholder='Senha' secureTextEntry />
-
-          <Button title='Acessar'/>
+          <Text color="gray.500" fontSize="sm" mb={6} fontFamily="heading">
+            Entre ou crie uma conta para continuar
+          </Text>
+          {
+            Platform.OS == 'android' ? <Button w="full" variant="outline" title='Continuar com a conta Google' fillColor='white'/> : <Button w="full" title='Continuar com a Apple' fillColor='black'/>
+          }
+          <HStack mt={5} color="gray.500" justifyContent="space-between" alignItems="center">
+            <Text 
+              w="40"  
+              textAlign="center" 
+              borderBottomWidth={1}
+              borderBottomColor="gray.400"
+              mx={2}
+              mb={4}
+            />
+            <Text
+            color="gray.400"
+            >ou</Text>
+            <Text 
+              w="40"  
+              textAlign="center" 
+              borderBottomWidth={1}
+              borderBottomColor="gray.400"
+              mx={2}
+              mb={4}
+            />
+          </HStack>
+          <Button w="full" title='Facebook' mt={5} fillColor='blue.600'/>
         </Center>
 
-        <Center mt={24}>
-          <Text color="gray.100" fontSize="sm" mb={3} fontFamily="body">Ainda não tem acesso?</Text>  
-          <Button title='Cria conta' variant="outline" onPress={handleNewAccount}/>
-        </Center>
+        <HStack justifyContent="space-between" w="full" mt={5}>
+          <Button w="2/5" title='Celular' variant="outline" onPress={handleLoginScreen}/>
+          <Button w="2/5" title='E-mail' variant="outline" onPress={handleLoginScreen}/>
+        </HStack>
       </View>
     </VStack>
     </ScrollView>
