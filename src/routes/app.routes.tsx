@@ -1,6 +1,6 @@
 
 import { Icon, useTheme } from "native-base"
-import { FontAwesome, MaterialIcons, Ionicons } from "@expo/vector-icons"
+import { Foundation, MaterialIcons, Ionicons, Feather } from "@expo/vector-icons"
 import { BottomTabNavigationProp, createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { Home } from "@screens/Home"
 import { Profile } from "@screens/Profile"
@@ -43,7 +43,7 @@ export function AppRoutes () {
         component={Home}
         options={{
           tabBarIcon: () => (
-            <Icon mt={1} as={MaterialIcons} name="home" color="black" size={iconSize}/> 
+            <Icon mt={1} ml={2} as={Foundation} name="home" color="black" size={iconSize}/> 
           ),
           tabBarLabel: "Início"
         }}
@@ -53,7 +53,7 @@ export function AppRoutes () {
         component={Search}
         options={{
           tabBarIcon: () => (
-            <Icon mt={1} as={FontAwesome} name="search" color="black" size={iconSize}/> 
+            <Icon mt={1} as={Feather} name="search" color="black" size={iconSize}/> 
           ),
           tabBarLabel: "Busca"
         }}
