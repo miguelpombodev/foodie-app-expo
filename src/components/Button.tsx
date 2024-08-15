@@ -13,7 +13,7 @@ export default function Button ({title, variant = "solid", fillColor = "red.500"
       borderWidth={variant === "outline" ? 1 : 0}
       borderColor="gray.500"
       rounded="sm" 
-      _pressed={{ bg:  variant === "outline" ? "gray.600" : "green.700"} } 
+      _pressed={{ bg:  fillColor === "red.500" && variant !== "outline" ? "red.500" : "white"} } 
       {...rest}>
       <Text color={variant === "outline" ? "gray.500" : "white"}  fontFamily="heading" fontSize="sm">
         {title}

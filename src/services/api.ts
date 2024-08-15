@@ -1,21 +1,36 @@
+import { storageUserAuthGet } from "@storage/storageUser";
+import { AppError } from "@utils/AppError";
 import axios from "axios";
 
 const api = axios.create({
   baseURL: `${process.env.EXPO_PUBLIC_API_HOST_SERVER}:${process.env.EXPO_PUBLIC_API_HOST_PORT}`,
-  headers: {
-    Authorization: `Bearer ${process.env.EXPO_PUBLIC_BEARER_JWT_TOKEN}`,
-    refreshToken: process.env.EXPO_PUBLIC_REFRESH_TOKEN,
-  },
 });
 
 api.interceptors.request.use(
-  (config) => {
-    console.log("INTERCEPTOR => ", config);
+  async (config) => {
+    const authData = await storageUserAuthGet();
+
+    config.headers["Authorization"] = `Bearer ${authData.token}`;
+    config.headers["refreshToken"] = authData.refreshToken;
+
     return config;
   },
   (error) => {
     console.error(`REQUEST ERROS: ${error}`);
     return Promise.reject(error);
+  }
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.data) {
+      return Promise.reject(new AppError(error.response.data.message));
+    } else {
+      return Promise.reject(
+        new AppError("Erro no servidor. Tente novamente mais tarde")
+      );
+    }
   }
 );
 
