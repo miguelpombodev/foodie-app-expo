@@ -1,6 +1,6 @@
 import { Header } from "@components/Header";
 import Input from "@components/Input";
-import { VStack, Text, View, HStack, ScrollView, Icon, Heading, Image } from "native-base";
+import { VStack, Text, View, HStack, ScrollView, Icon, Heading, Image, Spinner } from "native-base";
 import { Ionicons, AntDesign } from "@expo/vector-icons"
 import { useEffect, useState } from "react";
 import { SquaredStoreTypes } from "@components/SquaredStoreType";
@@ -151,61 +151,89 @@ export function Home() {
           <Input placeholder="Buscar em Restaurantes" placeholderTextColor="gray.600" />
         </HStack>
 
-        <View>
-          <ScrollView contentContainerStyle={{flexGrow: 1}} showsHorizontalScrollIndicator={false} overScrollMode='never' horizontal>
-            <HStack ml={5}>
-              {storeTypes && storeTypes.map(st => (
-                <SquaredStoreTypes key={st.id} avatar={st.avatar} name={st.name}/>
-              ))}
-            </HStack>
-          </ScrollView>
+        <View alignItems="center">
+          {
+            storeTypes ? <ScrollView contentContainerStyle={{flexGrow: 1}} showsHorizontalScrollIndicator={false} overScrollMode='never' horizontal>
+              <HStack ml={5}>
+                {storeTypes.map(st => (
+                  <SquaredStoreTypes key={st.id} avatar={st.avatar} name={st.name}/>
+                ))}
+              </HStack>
+            </ScrollView>
+            :
+            <View alignItems="center">
+              <Spinner color="red.500"/>
+            </View>          
+          }
         </View>
 
-        <View my={10}>
+        <View my={5}>
           <HStack mb={5} justifyContent="space-between" alignItems="center" px={3}>
               <Heading fontSize="md">Ultimas Lojas</Heading>
-              <Text color="red.500" fontSize="sm">Ver mais</Text>
+              <Text color="red.500" fontSize="sm" fontWeight="bold">Ver mais</Text>
           </HStack>
-          <ScrollView contentContainerStyle={{flexGrow: 1}} showsHorizontalScrollIndicator={false} overScrollMode='never' horizontal>
-            <HStack ml={3}>
-              {resumedStores && renderResumedStores()}
-            </HStack>
-          </ScrollView>
+          {
+            resumedStores ?
+            <ScrollView contentContainerStyle={{flexGrow: 1}} showsHorizontalScrollIndicator={false} overScrollMode='never' horizontal>
+              <HStack ml={3}>
+                { renderResumedStores() } 
+              </HStack>
+            </ScrollView> 
+            : 
+            <View alignItems="center">
+              <Spinner color="red.500"/>
+            </View>
+          }
+
         </View>
 
-        <View my={10}>
+        <View my={5}>
           <HStack mb={5} justifyContent="space-between" alignItems="center" px={3}>
               <Heading fontSize="md">Vai um pra viagem? 🚙</Heading>
               <Text color="red.500" fontSize="sm" fontWeight="bold">Ver mais</Text>
           </HStack>
-          <ScrollView contentContainerStyle={{flexGrow: 1}} showsHorizontalScrollIndicator={false} overScrollMode='never' horizontal>
-            <HStack ml={5}>
-            {
-              sectionedProducts && renderProductsBySection()
-            }
-            </HStack>
-          </ScrollView>
+          {
+            sectionedProducts ?
+              <ScrollView contentContainerStyle={{flexGrow: 1}} showsHorizontalScrollIndicator={false} overScrollMode='never' horizontal>
+                <HStack ml={5}>
+                {
+                  renderProductsBySection()
+                }
+                </HStack>
+              </ScrollView>
+            :
+            <View alignItems="center">
+              <Spinner color="red.500"/>
+            </View>
+          }
         </View>
 
-        <View my={10}>
+        <View my={5}>
           <HStack mb={5} justifyContent="space-between" alignItems="center" px={3}>
               <Heading fontSize="md">Ofertas Exclusivas</Heading>
               <Text color="red.500" fontSize="sm" fontWeight="bold">Ver mais</Text>
           </HStack>
-          <ScrollView contentContainerStyle={{flexGrow: 1}} showsHorizontalScrollIndicator={false} overScrollMode='never' horizontal>
+          {
+           userCustomProduct ? 
+           <ScrollView contentContainerStyle={{flexGrow: 1}} showsHorizontalScrollIndicator={false} overScrollMode='never' horizontal>
             <HStack ml={5}>
             {
-              userCustomProduct && renderUserCustomizedProducts()
+              renderUserCustomizedProducts()
             }
             </HStack>
           </ScrollView>
+          : 
+          <View alignItems="center">
+            <Spinner color="red.500"/>
+          </View>
+          }
         </View>
 
         <View>
           <Heading fontSize="md" mb={5} px={3}>Lojas</Heading>
 
           <View px={5}>
-            {stores && renderStoreList()}
+            {stores ? renderStoreList() : <Spinner color="red.500"/>}
           </View>
         </View>
       </VStack>
